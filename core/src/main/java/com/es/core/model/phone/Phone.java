@@ -3,6 +3,7 @@ package com.es.core.model.phone;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 public class Phone {
@@ -27,7 +28,7 @@ public class Phone {
 
     private String os;
 
-    private Set<Color> colors = Collections.EMPTY_SET;
+    private Set<Color> colors = Collections.emptySet();
 
     private String displayResolution;
 
@@ -271,5 +272,52 @@ public class Phone {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Phone{");
+        sb.append("id=").append(id);
+        sb.append(", brand='").append(brand).append('\'');
+        sb.append(", model='").append(model).append('\'');
+        sb.append(", price=").append(price);
+        sb.append(", displaySizeInches=").append(displaySizeInches);
+        sb.append(", weightGr=").append(weightGr);
+        sb.append(", lengthMm=").append(lengthMm);
+        sb.append(", widthMm=").append(widthMm);
+        sb.append(", heightMm=").append(heightMm);
+        sb.append(", announced=").append(announced);
+        sb.append(", deviceType='").append(deviceType).append('\'');
+        sb.append(", os='").append(os).append('\'');
+        sb.append(", colors=").append(colors);
+        sb.append(", displayResolution='").append(displayResolution).append('\'');
+        sb.append(", pixelDensity=").append(pixelDensity);
+        sb.append(", displayTechnology='").append(displayTechnology).append('\'');
+        sb.append(", backCameraMegapixels=").append(backCameraMegapixels);
+        sb.append(", frontCameraMegapixels=").append(frontCameraMegapixels);
+        sb.append(", ramGb=").append(ramGb);
+        sb.append(", internalStorageGb=").append(internalStorageGb);
+        sb.append(", batteryCapacityMah=").append(batteryCapacityMah);
+        sb.append(", talkTimeHours=").append(talkTimeHours);
+        sb.append(", standByTimeHours=").append(standByTimeHours);
+        sb.append(", bluetooth='").append(bluetooth).append('\'');
+        sb.append(", positioning='").append(positioning).append('\'');
+        sb.append(", imageUrl='").append(imageUrl).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Phone phone = (Phone) o;
+        return Objects.equals(id, phone.id) && Objects.equals(brand, phone.brand) && Objects.equals(model, phone.model) && Objects.equals(price, phone.price) && Objects.equals(displaySizeInches, phone.displaySizeInches) && Objects.equals(weightGr, phone.weightGr) && Objects.equals(lengthMm, phone.lengthMm) && Objects.equals(widthMm, phone.widthMm) && Objects.equals(heightMm, phone.heightMm) && Objects.equals(announced, phone.announced) && Objects.equals(deviceType, phone.deviceType) && Objects.equals(os, phone.os) && Objects.equals(colors, phone.colors) && Objects.equals(displayResolution, phone.displayResolution) && Objects.equals(pixelDensity, phone.pixelDensity) && Objects.equals(displayTechnology, phone.displayTechnology) && Objects.equals(backCameraMegapixels, phone.backCameraMegapixels) && Objects.equals(frontCameraMegapixels, phone.frontCameraMegapixels) && Objects.equals(ramGb, phone.ramGb) && Objects.equals(internalStorageGb, phone.internalStorageGb) && Objects.equals(batteryCapacityMah, phone.batteryCapacityMah) && Objects.equals(talkTimeHours, phone.talkTimeHours) && Objects.equals(standByTimeHours, phone.standByTimeHours) && Objects.equals(bluetooth, phone.bluetooth) && Objects.equals(positioning, phone.positioning) && Objects.equals(imageUrl, phone.imageUrl) && Objects.equals(description, phone.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, brand, model, price, displaySizeInches, weightGr, lengthMm, widthMm, heightMm, announced, deviceType, os, colors, displayResolution, pixelDensity, displayTechnology, backCameraMegapixels, frontCameraMegapixels, ramGb, internalStorageGb, batteryCapacityMah, talkTimeHours, standByTimeHours, bluetooth, positioning, imageUrl, description);
     }
 }
