@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:/context/test-config.xml")
-public class JdbcPhoneDaoTest {
+public class JdbcPhoneDaoIntegrationTest {
     private static final String SQL_MAX_PHONE_ID_QUERY = "SELECT MAX(id) FROM phones";
     private static final String SQL_COUNT_PHONES_QUERY = "SELECT COUNT(*) FROM phones";
     private static final String SQL_COUNT_COLORS_QUERY = "SELECT COUNT (*) FROM phone2color WHERE phoneId = ";
@@ -119,6 +119,17 @@ public class JdbcPhoneDaoTest {
     @Test
     @DirtiesContext
     public void testAddNewPhoneIncreasesMaxIdByOne() {
+        Long maxIdBefore = currentMaxPhoneId();
+
+        phoneDao.save(phone);
+
+        Long maxIdAfterSave = currentMaxPhoneId();
+        Assert.isTrue(maxIdAfterSave == maxIdBefore + 1, "After row added ID must be increased by one");
+    }
+
+    @Test
+    @DirtiesContext
+    public void testAddPhoneIncreasesMaxIdByOne() {
         Long maxIdBefore = currentMaxPhoneId();
 
         phoneDao.save(phone);

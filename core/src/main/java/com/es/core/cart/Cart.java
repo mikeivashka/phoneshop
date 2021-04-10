@@ -1,49 +1,27 @@
 package com.es.core.cart;
 
-import java.math.BigDecimal;
-import java.util.Hashtable;
-import java.util.Map;
+import com.es.core.model.phone.CartItem;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.SessionScope;
 
+import java.util.HashSet;
+import java.util.Set;
+
+@Component
+@SessionScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Cart {
-    private Map<Long, Long> cartItems;
-    private Long totalItemsCount;
-    private BigDecimal totalPrice;
+    private Set<CartItem> cartItems;
 
     public Cart() {
-        this.cartItems = new Hashtable<>();
-        totalItemsCount = 0L;
-        totalPrice = BigDecimal.ZERO;
+        this.cartItems = new HashSet<>();
     }
 
-    public Long getTotalItemsCount() {
-        return totalItemsCount;
-    }
-
-    public void setTotalItemsCount(Long totalItemsCount) {
-        this.totalItemsCount = totalItemsCount;
-    }
-
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public Map<Long, Long> getCartItems() {
+    public Set<CartItem> getCartItems() {
         return cartItems;
     }
 
-    public void setCartItems(Map<Long, Long> cartItems) {
+    public void setCartItems(Set<CartItem> cartItems) {
         this.cartItems = cartItems;
-    }
-
-    @Override
-    public String toString() {
-        return "Cart{" + "cartItems=" + cartItems +
-                ", totalItems=" + totalItemsCount +
-                ", totalPrice=" + totalPrice +
-                '}';
     }
 }

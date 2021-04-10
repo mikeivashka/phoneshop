@@ -57,7 +57,7 @@
                 </td>
                 <td>${phone.displaySizeInches}</td>
                 <td>$ ${phone.price}</td>
-                <td><input id="${phone.id}" value="1"/></td>
+                <td><input id="${phone.id}" value="1"/><label for="${phone.id}"></label></td>
                 <td>
                     <button class="btn btn-secondary" onclick="addToCart(${phone.id}, $('#${phone.id}').val())">Add to
                         cart

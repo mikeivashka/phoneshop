@@ -1,69 +1,72 @@
 package com.es.core.cart;
 
+import com.es.core.model.phone.CartItem;
+import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.SessionScope;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.*;
 
-@Service("cartService")
-@SessionScope(proxyMode = ScopedProxyMode.INTERFACES)
+@Service
 public class HttpSessionCartService implements CartService {
-
+    @Resource
     private Cart cart;
 
     @Resource
     private PhoneDao phoneDao;
 
-    @PostConstruct
-    public void init() {
-        cart = new Cart();
-    }
-
     @Override
-    public Cart getCart() {
-        return cart;
+    public Map<Phone, Long> getCart() {
+        Map<Phone, Long> cartItemsMap = new HashMap<>();
+        cart.getCartItems().forEach(item -> cartItemsMap.put(item.getPhone(), item.getQuantity()));
+        return cartItemsMap;
     }
 
     @Override
     public void addPhone(Long phoneId, Long quantity) {
-        cart.getCartItems().merge(phoneId, quantity, Math::addExact);
-        recalculateCartStatistics();
+        Phone phoneToAdd = phoneDao.get(phoneId).orElseThrow(IllegalArgumentException::new);
+        Optional<CartItem> cartItemOptional = cart.getCartItems()
+                .stream()
+                .filter(cartItem -> cartItem.getPhone().getId().equals(phoneToAdd.getId()))
+                .findFirst();
+        if (cartItemOptional.isPresent()) {
+            cartItemOptional.get().setQuantity(cartItemOptional.get().getQuantity() + quantity);
+        } else {
+            cart.getCartItems().add(new CartItem(phoneToAdd, quantity));
+        }
     }
 
     @Override
     public void update(Map<Long, Long> items) {
-        cart.setCartItems(items);
-        recalculateCartStatistics();
+        Set<CartItem> cartItemsToBeSet = new HashSet<>(items.size());
+        items.forEach((key, value) -> cartItemsToBeSet.add(
+                new CartItem(phoneDao.get(key)
+                        .orElseThrow(IllegalArgumentException::new),
+                        value)
+        ));
+        cart.setCartItems(cartItemsToBeSet);
     }
 
     @Override
     public void remove(Long phoneId) {
-        cart.getCartItems().remove(phoneId);
-        recalculateCartStatistics();
+        Optional<Phone> phoneToDeleteOptional = phoneDao.get(phoneId);
+        phoneToDeleteOptional.ifPresent(phone ->
+                cart.getCartItems().removeIf(cartItem -> cartItem.getPhone().getId().equals(phone.getId())));
     }
 
-    private void recalculateCartStatistics() {
-        Long itemsCount = cart.getCartItems()
-                .values()
-                .stream()
-                .mapToLong(Long::longValue)
+    @Override
+    public BigDecimal getTotalPrice() {
+        return cart.getCartItems().stream()
+                .map(cartItem -> cartItem.getPhone().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public Long getTotalItemsCount() {
+        return cart.getCartItems().stream()
+                .mapToLong(CartItem::getQuantity)
                 .sum();
-        BigDecimal totalPrice = BigDecimal.valueOf(cart.getCartItems()
-                .entrySet()
-                .stream()
-                .mapToDouble(entry ->
-                        entry.getValue() *
-                                phoneDao.get(entry.getKey()).orElseThrow(IllegalArgumentException::new)
-                                        .getPrice()
-                                        .doubleValue())
-                .sum()
-        );
-        cart.setTotalItemsCount(itemsCount);
-        cart.setTotalPrice(totalPrice);
     }
 }

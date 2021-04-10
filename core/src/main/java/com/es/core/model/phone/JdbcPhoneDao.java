@@ -12,23 +12,21 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.*;
 
-@Component("phoneDao")
+@Component
 public class JdbcPhoneDao implements PhoneDao {
-    private static final String SQL_WHERE_FILTER = "WHERE price IS NOT NULL " +
-            "AND stock > 0" +
-            "AND LOWER(model) LIKE LOWER(?)";
-    private static final String SQL_GET_COLORS_QUERY = "SELECT colors.id, colors.code FROM colors JOIN phone2color ON colors.id = phone2color.colorId WHERE phoneId = ";
-    private static final String SQL_FIND_PRODUCTS = "SELECT * FROM phones";
-    private static final String SQL_FIND_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT * FROM phones JOIN stocks ON phones.id = stocks.phoneId " + SQL_WHERE_FILTER;
-    private static final String SQL_COUNT_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT COUNT(*) FROM phones JOIN stocks ON phones.id = stocks.phoneId " + SQL_WHERE_FILTER;
-    private static final String SQL_ORDERED_OFFSET_LIMIT = "ORDER BY %s %s OFFSET ? LIMIT ?";
+    private static final String SQL_GET_COLORS_QUERY = "SELECT colors.id, colors.code FROM colors JOIN phone2color ON colors.id = phone2color.colorId WHERE phoneId = %d";
+    private static final String SQL_GET_PHONE_BY_ID_QUERY = "SELECT * FROM phones WHERE id = %d";
+    private static final String SQL_ALL_PRODUCTS = "SELECT * FROM phones ORDER BY %s %s OFFSET %d LIMIT %d";
+    private static final String SQL_FIND_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT * FROM phones JOIN stocks ON phones.id = stocks.phoneId WHERE price IS NOT NULL AND stock > 0 AND LOWER(model) LIKE LOWER(?) ORDER BY %s %s OFFSET %d LIMIT %d";
+    private static final String SQL_COUNT_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT COUNT(*) FROM phones JOIN stocks ON phones.id = stocks.phoneId WHERE price IS NOT NULL AND stock > 0 AND LOWER(model) LIKE LOWER(?)";
+    private static final String SQL_QUERY_TEMPLATE = "%%%s%%";
 
     @Resource
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public Optional<Phone> get(final Long key) {
-        List<Phone> matches = jdbcTemplate.query("SELECT * FROM phones WHERE id = " + key, new BeanPropertyRowMapper<>(Phone.class));
+        List<Phone> matches = jdbcTemplate.query(String.format(SQL_GET_PHONE_BY_ID_QUERY, key), new BeanPropertyRowMapper<>(Phone.class));
         if (!matches.isEmpty()) {
             matches.get(0).setColors(queryColors(key));
             return Optional.of(matches.get(0));
@@ -48,28 +46,28 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Override
     public Long countQueryResults(String query) {
-        return jdbcTemplate.queryForObject(SQL_COUNT_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK, Long.class, String.format("%%%s%%", query));
+        return jdbcTemplate.queryForObject(SQL_COUNT_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK, Long.class, String.format(SQL_QUERY_TEMPLATE, query));
     }
 
     @Override
     public List<Phone> findAll(int offset, int limit, SortField sortField, SortOrder sortOrder) {
-        String sql = SQL_FIND_PRODUCTS + " " + String.format(SQL_ORDERED_OFFSET_LIMIT, sortField.getColumnName(), sortOrder.name());
-        List<Phone> result = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Phone.class), offset, limit);
+        String sql = String.format(SQL_ALL_PRODUCTS, sortField.getColumnName(), sortOrder.name(), offset, limit);
+        List<Phone> result = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Phone.class));
         result.forEach(phone -> phone.setColors(queryColors(phone.getId())));
         return result;
     }
 
     @Override
     public List<Phone> query(String query, int offset, int limit, SortField sortField, SortOrder sortOrder) {
-        String searchPattern = String.format("%%%s%%", query);
-        String sql = SQL_FIND_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK + " " + String.format(SQL_ORDERED_OFFSET_LIMIT, sortField.getColumnName(), sortOrder.name());
-        List<Phone> result = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Phone.class), searchPattern, offset, limit);
+        String sql = String.format(SQL_FIND_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK, sortField.getColumnName(), sortOrder.name(), offset, limit);
+        List<Phone> result = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Phone.class), String.format(SQL_QUERY_TEMPLATE, query));
         result.forEach(phone -> phone.setColors(queryColors(phone.getId())));
         return result;
     }
 
     private Set<Color> queryColors(final Long key) {
-        List<Color> matches = jdbcTemplate.query(SQL_GET_COLORS_QUERY + key, new BeanPropertyRowMapper<>(Color.class));
+        List<Color> matches = jdbcTemplate.query(String.format(SQL_GET_COLORS_QUERY, key), new BeanPropertyRowMapper<>(Color.class));
         return new HashSet<>(matches);
     }
+
 }

@@ -22,7 +22,8 @@ public class CartPageController {
 
     @GetMapping(value = "/minicart")
     public String getMinicart(Model model) {
-        model.addAttribute("cart", cartService.getCart());
+        model.addAttribute("cartTotalPrice", cartService.getTotalPrice());
+        model.addAttribute("cartTotalItemsCount", cartService.getTotalItemsCount());
         return "miniCart";
     }
 

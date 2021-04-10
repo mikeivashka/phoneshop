@@ -1,6 +1,6 @@
 package com.es.phoneshop.web.controller.dto;
 
-public class AddToCartResponseModel {
+public class AddToCartResponse {
     private boolean success;
     private Double cartSubtotal;
     private Long cartQuantity;

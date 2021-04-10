@@ -37,10 +37,16 @@
                 quantity: quantity
             }),
             success: function (data) {
-                if(data.successStatus === true){
-                    $('#cartTotalPrice').text(data.cartSubtotal.toFixed(1))
-                    $('#cartTotalQuantity').text(data.cartQuantity)
+                $('#cartTotalPrice').text(data.cartSubtotal.toFixed(1))
+                $('#cartTotalQuantity').text(data.cartQuantity)
+                const label = $("label[for='" + productId + "']")
+                if (data.successStatus === true) {
+                    label.attr("class", "text-success")
                 }
+                else {
+                    label.attr("class", "text-danger")
+                }
+                label.text(data.message)
             }
         });
     }
