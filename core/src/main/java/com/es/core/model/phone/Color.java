@@ -19,4 +19,11 @@ public class Color {
     public void setCode(final String code) {
         this.code = code;
     }
+
+    @Override
+    public String toString() {
+        return "Color{" + "id=" + id +
+                ", code='" + code + '\'' +
+                '}';
+    }
 }
