@@ -39,29 +39,29 @@
             <th>Action</th>
         </tr>
         </thead>
-        <c:forEach var="phone" items="${phones}">
+        <c:forEach var="item" items="${phones}">
             <tr>
                 <td>
                     <img height="70px"
-                         src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
+                         src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${item.imageUrl}">
                 </td>
-                <td>${phone.brand}</td>
-                <td><a href="${pageContext.servletContext.contextPath}/productDetails/${phone.id}">${phone.model}</a>
+                <td>${item.brand}</td>
+                <td><a href="${pageContext.servletContext.contextPath}/productDetails/${item.id}">${item.model}</a>
                 </td>
-                <td><c:if test="${not empty phone.colors}">
+                <td><c:if test="${not empty item.colors}">
                     <ul>
-                        <c:forEach var="color" items="${phone.colors}">
+                        <c:forEach var="color" items="${item.colors}">
                             <li>${color.code}</li>
                         </c:forEach>
                     </ul>
 
                 </c:if>
                 </td>
-                <td>${phone.displaySizeInches}</td>
-                <td>$ ${phone.price}</td>
-                <td><input id="${phone.id}" value="1"/><label for="${phone.id}"></label></td>
+                <td>${item.displaySizeInches}</td>
+                <td>$ ${item.price}</td>
+                <td><input id="${item.id}" value="1"/><label for="${item.id}"></label></td>
                 <td>
-                    <button class="btn btn-secondary" onclick="addToCart(${phone.id}, $('#${phone.id}').val())">Add to
+                    <button class="btn btn-secondary" onclick="addToCart(${item.id}, $('#${item.id}').val())">Add to
                         cart
                     </button>
                 </td>

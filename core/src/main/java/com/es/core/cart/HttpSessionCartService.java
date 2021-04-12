@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void update(Map<Long, Long> items) {
-        Set<CartItem> cartItemsToBeSet = new HashSet<>(items.size());
+        Set<CartItem> cartItemsToBeSet = new LinkedHashSet<>(items.size());
         items.forEach((key, value) -> cartItemsToBeSet.add(
                 new CartItem(phoneDao.get(key)
                         .orElseThrow(IllegalArgumentException::new),
