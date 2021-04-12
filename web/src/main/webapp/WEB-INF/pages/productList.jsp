@@ -17,7 +17,8 @@
             <form>
                 <input type="hidden" name="order" value="${param.order}">
                 <input type="hidden" name="sort" value="${param.sort}">
-                <input name="query" class="form-control" type="text" placeholder="Search" aria-label="Search" value="${param.query}">
+                <input name="query" class="form-control" type="text" placeholder="Search" aria-label="Search"
+                       value="${param.query}">
                 <button type="submit" class="btn btn-primary">
                     <em class="fas fa-search">Submit</em>
                 </button>
@@ -45,7 +46,8 @@
                          src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
                 </td>
                 <td>${phone.brand}</td>
-                <td>${phone.model}</td>
+                <td><a href="${pageContext.servletContext.contextPath}/productDetails/${phone.id}">${phone.model}</a>
+                </td>
                 <td><c:if test="${not empty phone.colors}">
                     <ul>
                         <c:forEach var="color" items="${phone.colors}">
