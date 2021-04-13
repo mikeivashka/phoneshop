@@ -1,25 +1,17 @@
 package com.es.phoneshop.web.controller.dto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public class CartUpdateForm {
-    private List<Long> productIds;
+    @Valid
+    private List<@Valid CartEntryUpdateForm> cartEntries;
 
-    private List<String> quantities;
-
-    public List<Long> getProductIds() {
-        return productIds;
+    public List<CartEntryUpdateForm> getCartEntries() {
+        return cartEntries;
     }
 
-    public void setProductIds(List<Long> productIds) {
-        this.productIds = productIds;
-    }
-
-    public List<String> getQuantities() {
-        return quantities;
-    }
-
-    public void setQuantities(List<String> quantities) {
-        this.quantities = quantities;
+    public void setCartEntries(List<CartEntryUpdateForm> cartEntries) {
+        this.cartEntries = cartEntries;
     }
 }

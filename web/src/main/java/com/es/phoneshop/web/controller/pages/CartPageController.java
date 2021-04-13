@@ -2,17 +2,17 @@ package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.Phone;
+import com.es.phoneshop.web.controller.dto.CartEntryUpdateForm;
 import com.es.phoneshop.web.controller.dto.CartUpdateForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.HashMap;
+import javax.validation.Valid;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/cart")
@@ -24,32 +24,17 @@ public class CartPageController {
     public String getCart(Model model) {
         Map<Phone, Long> cart = cartService.getCart();
         model.addAttribute("cart", cart);
+        model.addAttribute("cartUpdateForm", extractUpdateFormFromCart(cart));
         return "cartPage";
     }
 
     @PutMapping
-    public String updateCart(@ModelAttribute CartUpdateForm form, HttpServletRequest req, Model model) {
-        NumberFormat numberFormat = NumberFormat.getIntegerInstance(req.getLocale());
-        Map<Long, String> errors = new HashMap<>();
-        Map<Long, Long> updatedCart = new HashMap<>();
-        long quantity;
-        for (int i = 0; i < form.getProductIds().size(); i++) {
-            try {
-                quantity = numberFormat.parse(form.getQuantities().get(i)).longValue();
-                if (quantity < 1L) {
-                    throw new IllegalArgumentException();
-                }
-                updatedCart.put(form.getProductIds().get(i), Long.valueOf(form.getQuantities().get(i)));
-            } catch (IllegalArgumentException | ParseException e) {
-                errors.put(form.getProductIds().get(i), "Enter a positive number");
-            }
-        }
-        if (errors.isEmpty()) {
-            cartService.update(updatedCart);
+    public String updateCart(@ModelAttribute @Valid CartUpdateForm form, BindingResult bindingResult, Model model) {
+        if (!bindingResult.hasErrors()) {
+            cartService.update(parseUpdateForm(form));
             return "redirect:cart";
         } else {
             model.addAttribute("cart", cartService.getCart());
-            model.addAttribute("errors", errors);
             return "cartPage";
         }
     }
@@ -60,5 +45,23 @@ public class CartPageController {
         model.addAttribute("cartTotalPrice", cartService.getTotalPrice());
         model.addAttribute("cartTotalItemsCount", cartService.getTotalItemsCount());
         return "miniCart";
+    }
+
+    private CartUpdateForm extractUpdateFormFromCart(Map<Phone, Long> cart) {
+        CartUpdateForm cartUpdateForm = new CartUpdateForm();
+        cartUpdateForm.setCartEntries(cart.entrySet().stream().map(entry -> {
+                    CartEntryUpdateForm formEntry = new CartEntryUpdateForm();
+                    formEntry.setProductId(entry.getKey().getId());
+                    formEntry.setQuantity(entry.getValue().toString());
+                    return formEntry;
+                }).collect(Collectors.toList())
+        );
+        return cartUpdateForm;
+    }
+
+    private Map<Long, Long> parseUpdateForm(CartUpdateForm form) {
+        return form.getCartEntries()
+                .stream()
+                .collect(Collectors.toMap(CartEntryUpdateForm::getProductId, entry -> Long.valueOf(entry.getQuantity())));
     }
 }

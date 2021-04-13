@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class HttpSessionCartService implements CartService {
     @Override
     public Map<Phone, Long> getCart() {
         return cart.getCartItems().stream()
-                .collect(Collectors.toMap(CartItem::getPhone, CartItem::getQuantity));
+                .collect(Collectors.toMap(CartItem::getPhone, CartItem::getQuantity, (x, y) -> y, LinkedHashMap<Phone, Long>::new));
     }
 
     @Override
@@ -43,20 +43,16 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void update(Map<Long, Long> items) {
-        Set<CartItem> cartItemsToBeSet = new LinkedHashSet<>(items.size());
-        items.forEach((key, value) -> cartItemsToBeSet.add(
-                new CartItem(phoneDao.get(key)
-                        .orElseThrow(IllegalArgumentException::new),
-                        value)
-        ));
+        Set<CartItem> cartItemsToBeSet = items.entrySet()
+                .stream()
+                .map(e -> new CartItem(phoneDao.get(e.getKey()).orElseThrow(IllegalArgumentException::new), e.getValue()))
+                .collect(Collectors.toSet());
         cart.setCartItems(cartItemsToBeSet);
     }
 
     @Override
     public void remove(Long phoneId) {
-        Optional<Phone> phoneToDeleteOptional = phoneDao.get(phoneId);
-        phoneToDeleteOptional.ifPresent(phone ->
-                cart.getCartItems().removeIf(cartItem -> cartItem.getPhone().getId().equals(phone.getId())));
+        cart.getCartItems().removeIf(cartItem -> cartItem.getPhone().getId().equals(phoneId));
     }
 
     @Override

@@ -11,8 +11,8 @@
     <c:choose>
         <c:when test="${not empty cart}">
             <div class="row justify-content-center">
-                <form action="${pageContext.servletContext.contextPath}/cart" method="post">
-                    <input type="hidden" name="_method" value="put">
+                <form:form modelAttribute="cartUpdateForm" action="${pageContext.servletContext.contextPath}/cart"
+                           method="put">
                     <table class="table">
                         <thead>
                         <tr>
@@ -53,12 +53,18 @@
                                     </c:choose>
                                 </td>
                                 <td class="align-middle">
-                                    <input type="hidden" name="productIds" value="${item.id}"/>
-                                    <input id="${item.id}" name="quantities"
-                                           value="${not empty errors[item.id] ? paramValues['quantities'][status.index] : cart.get(item)}"/>
-                                    <c:if test="${not empty errors[item.id]}">
-                                        <br/><label for="${item.id}" class="text-danger">${errors[item.id]}</label>
-                                    </c:if>
+                                    <div class="input-group">
+                                        <form:input path="cartEntries[${status.index}].productId"
+                                                    hidden="hidden"
+                                                    value="${item.id}"/>
+                                        <form:input path="cartEntries[${status.index}].quantity"
+                                                    cssClass="form-control"
+                                                    cssErrorClass="form-control is-invalid"
+                                                    value="${cartUpdateForm.cartEntries.get(status.index).quantity}"/>
+                                        <div class="invalid-tooltip">
+                                            <form:errors path="cartEntries[${status.index}].quantity"/>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="align-middle">
                                     <a onclick="deleteFromCart(${item.id})"
@@ -71,7 +77,7 @@
                         <input type="submit" class="btn btn-primary mr-1" value="Update"/>
                         <a class="btn btn-primary ml-3" href="${pageContext.servletContext.contextPath}/order">Order</a>
                     </div>
-                </form>
+                </form:form>
             </div>
         </c:when>
         <c:otherwise>
