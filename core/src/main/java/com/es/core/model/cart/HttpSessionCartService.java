@@ -1,4 +1,4 @@
-package com.es.core.cart;
+package com.es.core.model.cart;
 
 import com.es.core.model.phone.CartItem;
 import com.es.core.model.phone.Phone;
@@ -16,19 +16,22 @@ import java.util.stream.Collectors;
 @Service
 public class HttpSessionCartService implements CartService {
     @Resource
+    private CartCalculationService cartCalculationService;
+
+    @Resource
     private Cart cart;
 
     @Resource
     private PhoneDao phoneDao;
 
     @Override
-    public Map<Phone, Long> getCart() {
+    public Map<Phone, Integer> getCart() {
         return cart.getCartItems().stream()
-                .collect(Collectors.toMap(CartItem::getPhone, CartItem::getQuantity, (x, y) -> y, LinkedHashMap<Phone, Long>::new));
+                .collect(Collectors.toMap(CartItem::getPhone, CartItem::getQuantity, (x, y) -> y, LinkedHashMap<Phone, Integer>::new));
     }
 
     @Override
-    public void addPhone(Long phoneId, Long quantity) {
+    public void addPhone(Long phoneId, Integer quantity) {
         Phone phoneToAdd = phoneDao.get(phoneId).orElseThrow(IllegalArgumentException::new);
         Optional<CartItem> cartItemOptional = cart.getCartItems()
                 .stream()
@@ -42,7 +45,7 @@ public class HttpSessionCartService implements CartService {
     }
 
     @Override
-    public void update(Map<Long, Long> items) {
+    public void update(Map<Long, Integer> items) {
         Set<CartItem> cartItemsToBeSet = items.entrySet()
                 .stream()
                 .map(e -> new CartItem(phoneDao.get(e.getKey()).orElseThrow(IllegalArgumentException::new), e.getValue()))
@@ -57,15 +60,13 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public BigDecimal getTotalPrice() {
-        return cart.getCartItems().stream()
-                .map(cartItem -> cartItem.getPhone().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return cartCalculationService.calculateCartTotal(cart.getCartItems());
     }
 
     @Override
-    public Long getTotalItemsCount() {
+    public Integer getTotalItemsCount() {
         return cart.getCartItems().stream()
-                .mapToLong(CartItem::getQuantity)
+                .mapToInt(CartItem::getQuantity)
                 .sum();
     }
 }

@@ -3,8 +3,16 @@ package com.es.phoneshop.web.controller.dto;
 public class AddToCartResponse {
     private boolean success;
     private Double cartSubtotal;
-    private Long cartQuantity;
+    private Integer cartQuantity;
     private String message;
+
+    public Integer getCartQuantity() {
+        return cartQuantity;
+    }
+
+    public void setCartQuantity(Integer cartQuantity) {
+        this.cartQuantity = cartQuantity;
+    }
 
     public void setSuccess(boolean success) {
         this.success = success;
@@ -30,11 +38,4 @@ public class AddToCartResponse {
         this.cartSubtotal = cartSubtotal;
     }
 
-    public Long getCartQuantity() {
-        return cartQuantity;
-    }
-
-    public void setCartQuantity(Long cartQuantity) {
-        this.cartQuantity = cartQuantity;
-    }
 }

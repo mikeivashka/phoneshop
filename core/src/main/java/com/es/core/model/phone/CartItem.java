@@ -2,9 +2,12 @@ package com.es.core.model.phone;
 
 public class CartItem {
     private Phone phone;
-    private Long quantity;
+    private Integer quantity;
 
-    public CartItem(Phone phone, Long quantity) {
+    public CartItem() {
+    }
+
+    public CartItem(Phone phone, Integer quantity) {
         this.phone = phone;
         this.quantity = quantity;
     }
@@ -17,11 +20,11 @@ public class CartItem {
         this.phone = phone;
     }
 
-    public Long getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Long quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 }

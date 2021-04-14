@@ -3,14 +3,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<tags:master pageTitle="Products list">
+<tags:master pageTitle="Cart">
     <h1>
         Cart
     </h1>
-
     <c:choose>
         <c:when test="${not empty cart}">
-            <div class="row justify-content-center">
+            <div class="justify-content-center">
                 <form:form modelAttribute="cartUpdateForm" action="${pageContext.servletContext.contextPath}/cart"
                            method="put">
                     <table class="table">
@@ -79,8 +78,10 @@
                     </div>
                 </form:form>
             </div>
+
         </c:when>
         <c:otherwise>
+
             <div class="row">
                 <div class="col">
                     <h3 class="text-secondary text-center">Your cart is empty</h3>

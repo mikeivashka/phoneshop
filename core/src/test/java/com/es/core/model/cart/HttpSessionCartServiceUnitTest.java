@@ -1,4 +1,4 @@
-package com.es.core.cart;
+package com.es.core.model.cart;
 
 import com.es.core.model.phone.CartItem;
 import com.es.core.model.phone.Phone;
@@ -15,14 +15,15 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpSessionCartServiceUnitTest {
-    private static final long PHONE_1_QUANTITY = 2;
-    private static final long PHONE_2_QUANTITY = 1;
-    private static final long PHONE_3_QUANTITY = 3;
-    private static final long TOTAL_QUANTITY = PHONE_1_QUANTITY + PHONE_2_QUANTITY + PHONE_3_QUANTITY;
+    private static final int PHONE_1_QUANTITY = 2;
+    private static final int PHONE_2_QUANTITY = 1;
+    private static final int PHONE_3_QUANTITY = 3;
+    private static final int TOTAL_QUANTITY = PHONE_1_QUANTITY + PHONE_2_QUANTITY + PHONE_3_QUANTITY;
     private static final double PHONE_1_PRICE = 200d;
     private static final double PHONE_2_PRICE = 50d;
     private static final double PHONE_3_PRICE = 20.5d;
@@ -33,6 +34,9 @@ public class HttpSessionCartServiceUnitTest {
     @InjectMocks
     @Spy
     private HttpSessionCartService cartService;
+
+    @Mock
+    private CartCalculationServiceImpl cartCalculationService;
 
     @Mock
     private Phone phone1;
@@ -62,6 +66,7 @@ public class HttpSessionCartServiceUnitTest {
         when(phone1.getId()).thenReturn(PHONE_1_ID);
         when(phone2.getId()).thenReturn(PHONE_2_ID);
         when(phone3.getId()).thenReturn(PHONE_3_ID);
+        when(cartCalculationService.calculateCartTotal(any())).thenCallRealMethod();
         cartItems = new HashSet<>(Arrays.asList(new CartItem(phone1, PHONE_1_QUANTITY),
                 new CartItem(phone2, PHONE_2_QUANTITY),
                 new CartItem(phone3, PHONE_3_QUANTITY)
@@ -87,7 +92,7 @@ public class HttpSessionCartServiceUnitTest {
     public void getCartTotalItemsCountOnEmptyCartReturnsZeroTest() {
         when(cart.getCartItems()).thenReturn(new HashSet<>());
 
-        Long expected = 0L;
+        Integer expected = 0;
         assertEquals(expected, cartService.getTotalItemsCount());
     }
 
@@ -113,12 +118,12 @@ public class HttpSessionCartServiceUnitTest {
         cartService.addPhone(PHONE_1_ID, PHONE_1_QUANTITY);
 
         assertTrue(cartService.getCart().containsKey(phone1));
-        assertEquals(Long.valueOf(PHONE_1_QUANTITY), cartService.getCart().get(phone1));
+        assertEquals(Integer.valueOf(PHONE_1_QUANTITY), cartService.getCart().get(phone1));
     }
 
     @Test
     public void getCartReturnsConvertedCartTest() {
-        Map<Phone, Long> expected = new HashMap<>();
+        Map<Phone, Integer> expected = new HashMap<>();
         expected.put(phone1, PHONE_1_QUANTITY);
         expected.put(phone2, PHONE_2_QUANTITY);
         expected.put(phone3, PHONE_3_QUANTITY);
@@ -129,7 +134,7 @@ public class HttpSessionCartServiceUnitTest {
     @Test
     public void updateCartSavesProvidedItems() {
         when(cart.getCartItems()).thenCallRealMethod();
-        Map<Long, Long> updatedCart = new HashMap<>();
+        Map<Long, Integer> updatedCart = new HashMap<>();
         updatedCart.put(PHONE_1_ID, PHONE_1_QUANTITY);
         updatedCart.put(PHONE_2_ID, PHONE_2_QUANTITY);
         updatedCart.put(PHONE_3_ID, PHONE_3_QUANTITY);
