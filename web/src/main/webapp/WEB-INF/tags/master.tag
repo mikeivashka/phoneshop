@@ -42,12 +42,29 @@
                 const label = $("label[for='" + productId + "']")
                 if (data.successStatus === true) {
                     label.attr("class", "text-success")
-                }
-                else {
+                } else {
                     label.attr("class", "text-danger")
                 }
                 label.text(data.message)
             }
+        });
+    }
+
+    function deleteFromCart(productId) {
+        $.ajax({
+            url: '${pageContext.servletContext.contextPath}/ajaxCart',
+            method: 'delete',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({
+                productId: productId
+            }),
+            success: setTimeout(
+                function () {
+                    document.location.reload()
+                }, 50
+            )
+
         });
     }
 </script>

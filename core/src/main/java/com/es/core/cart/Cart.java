@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Component
@@ -14,7 +14,7 @@ public class Cart {
     private Set<CartItem> cartItems;
 
     public Cart() {
-        this.cartItems = new HashSet<>();
+        this.cartItems = new LinkedHashSet<>();
     }
 
     public Set<CartItem> getCartItems() {

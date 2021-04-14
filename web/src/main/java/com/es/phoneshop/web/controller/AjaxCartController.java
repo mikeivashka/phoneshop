@@ -3,13 +3,11 @@ package com.es.phoneshop.web.controller;
 import com.es.core.cart.CartService;
 import com.es.phoneshop.web.controller.dto.AddToCartRequest;
 import com.es.phoneshop.web.controller.dto.AddToCartResponse;
+import com.es.phoneshop.web.controller.dto.DeleteFromCartRequest;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -39,5 +37,10 @@ public class AjaxCartController {
         responseModel.setCartQuantity(cartService.getTotalItemsCount());
         responseModel.setCartSubtotal(cartService.getTotalPrice().doubleValue());
         return responseModel;
+    }
+
+    @DeleteMapping
+    public void deletePhone(@RequestBody DeleteFromCartRequest request) {
+        cartService.remove(request.getProductId());
     }
 }
