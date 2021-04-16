@@ -22,6 +22,9 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private OrderDao orderDao;
 
+    @Resource
+    private StockDao stockDao;
+
     private BigDecimal deliveryPrice;
 
     @Value("${delivery.price}")
@@ -50,10 +53,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> findAll() {
+        return orderDao.findAll();
+    }
+
+    @Override
     public void placeOrder(Order order) {
         order.setPlacementDate(new Date());
         order.setStatus(OrderStatus.NEW);
         orderDao.placeOrder(order);
+    }
+
+    @Override
+    public void updateStatus(Order order, OrderStatus newStatus) {
+        orderDao.updateOrderStatus(order.getId(), newStatus);
+        if (newStatus == OrderStatus.DELIVERED) {
+            stockDao.applyReserved(order.getOrderItems());
+        } else if (newStatus == OrderStatus.REJECTED) {
+            stockDao.cancelReserved(order.getOrderItems());
+        }
     }
 
     private List<OrderItem> createOrderItemsList(Map<Phone, Integer> cart, Order order) {

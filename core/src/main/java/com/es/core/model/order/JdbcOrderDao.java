@@ -17,6 +17,8 @@ import java.util.Optional;
 public class JdbcOrderDao implements OrderDao {
     private static final String SQL_GET_ORDER_BY_ID = "SELECT * FROM orders WHERE orders.id = ?";
     private static final String SQL_GET_ITEMS_FOR_ORDER = "SELECT * FROM orderItems WHERE orderItems.orderId = ? ";
+    private static final String SQL_FIND_ALL_ORDERS = "SELECT * FROM orders ORDER BY placementDate DESC";
+    private static final String SQL_UPDATE_ORDER_STATUS = "UPDATE orders SET status = ? WHERE id = ?";
 
     @Resource
     private StockDao stockDao;
@@ -49,6 +51,18 @@ public class JdbcOrderDao implements OrderDao {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Order> findAll() {
+        List<Order> orders = jdbcTemplate.query(SQL_FIND_ALL_ORDERS, new BeanPropertyRowMapper<>(Order.class));
+        orders.forEach(order -> order.setOrderItems(getItemsForOrder(order)));
+        return orders;
+    }
+
+    @Override
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        jdbcTemplate.update(SQL_UPDATE_ORDER_STATUS, newStatus.name(), orderId);
     }
 
     private List<OrderItem> getItemsForOrder(Order order) {
