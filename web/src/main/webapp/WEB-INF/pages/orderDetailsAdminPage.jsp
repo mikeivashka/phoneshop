@@ -120,16 +120,16 @@
         </div>
         <c:if test="${order.status.name() == 'NEW'}">
             <div class="col-2">
-                <form method="post">
+                <form:form method="post">
                     <input name="status" type="hidden" value="DELIVERED">
                     <button type="submit" class="btn btn-secondary btn-lg">Delivered</button>
-                </form>
+                </form:form>
             </div>
             <div class="col-2">
-                <form method="post">
+                <form:form method="post">
                     <input name="status" type="hidden" value="REJECTED">
                     <button type="submit" class="btn btn-secondary btn-lg">Rejected</button>
-                </form>
+                </form:form>
             </div>
         </c:if>
 
