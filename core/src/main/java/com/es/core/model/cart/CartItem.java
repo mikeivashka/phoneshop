@@ -1,5 +1,9 @@
-package com.es.core.model.phone;
+package com.es.core.model.cart;
 
+import com.es.core.model.order.EnoughStock;
+import com.es.core.model.phone.Phone;
+
+@EnoughStock
 public class CartItem {
     private Phone phone;
     private Integer quantity;

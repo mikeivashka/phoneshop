@@ -28,8 +28,8 @@ public class OrdersPageController {
     }
 
     @PostMapping("/{orderId}")
-    public String setStatus(@PathVariable Long orderId, @RequestParam OrderStatus status){
+    public String setStatus(@PathVariable Long orderId, @RequestParam OrderStatus status) {
         orderService.updateStatus(orderService.getOrderById(orderId), status);
-        return "redirect:"+String.valueOf(orderId);
+        return "redirect:" + orderId;
     }
 }

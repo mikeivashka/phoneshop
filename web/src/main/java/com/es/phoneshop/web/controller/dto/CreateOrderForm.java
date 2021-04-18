@@ -1,45 +1,35 @@
-package com.es.core.model.order;
+package com.es.phoneshop.web.controller.dto;
 
+import com.es.core.model.cart.CartItem;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
-
-public class Order {
-    private Long id;
-    private List<OrderItem> orderItems;
+public class CreateOrderForm {
+    @Valid
+    private List<@Valid CartItem> orderItems;
     private BigDecimal subtotal;
     private BigDecimal deliveryPrice;
     private BigDecimal totalPrice;
+    @Size(min = 1, message = "First name is required")
     private String firstName;
+    @Size(min = 1, message = "Last name is required")
     private String lastName;
+    @Size(min = 1, message = "Delivery address is required")
     private String deliveryAddress;
+    @Pattern(regexp = "^\\+375\\((17|29|33|44)\\)[0-9]{3}-[0-9]{2}-[0-9]{2}$", message = "Enter a valid phone number")
     private String contactPhoneNo;
-    private OrderStatus status;
+    @Size(max = 4096, message = "Limit is 4096 symbols")
     private String additionalInfo;
-    private Date placementDate;
 
-    public Date getPlacementDate() {
-        return placementDate;
-    }
-
-    public void setPlacementDate(Date placementDate) {
-        this.placementDate = placementDate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<OrderItem> getOrderItems() {
+    public List<CartItem> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems(List<CartItem> orderItems) {
         this.orderItems = orderItems;
     }
 
@@ -97,14 +87,6 @@ public class Order {
 
     public void setContactPhoneNo(String contactPhoneNo) {
         this.contactPhoneNo = contactPhoneNo;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
     }
 
     public String getAdditionalInfo() {

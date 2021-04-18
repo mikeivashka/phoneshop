@@ -47,7 +47,7 @@ public class JdbcStockDaoIntegrationTest {
     }
 
     @Test
-    public void testReservePhonesIncreasesReserved(){
+    public void testReservePhonesIncreasesReserved() {
         Integer stockBefore = getReservedStockForPhone(EXISTING_PHONE_WITH_STOCK_KEY);
 
         stockDao.reservePhone(EXISTING_PHONE_WITH_STOCK_KEY, 1);

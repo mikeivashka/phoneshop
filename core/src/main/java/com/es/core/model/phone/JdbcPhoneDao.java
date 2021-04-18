@@ -7,12 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.*;
 
-@Component
 public class JdbcPhoneDao implements PhoneDao {
     private static final String SQL_GET_COLORS_QUERY = "SELECT colors.id, colors.code FROM colors JOIN phone2color ON colors.id = phone2color.colorId WHERE phoneId = %d";
     private static final String SQL_GET_PHONE_BY_ID_QUERY = "SELECT * FROM phones WHERE id = %d";
@@ -20,8 +17,11 @@ public class JdbcPhoneDao implements PhoneDao {
     private static final String SQL_FIND_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT * FROM phones JOIN stocks ON phones.id = stocks.phoneId WHERE price IS NOT NULL AND stock > 0 AND LOWER(model) LIKE LOWER('%%%s%%') ORDER BY %s %s OFFSET %d LIMIT %d";
     private static final String SQL_COUNT_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT COUNT(*) FROM phones JOIN stocks ON phones.id = stocks.phoneId WHERE price IS NOT NULL AND stock > 0 AND LOWER(model) LIKE LOWER('%%%s%%')";
 
-    @Resource
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcPhoneDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Optional<Phone> get(final Long key) {

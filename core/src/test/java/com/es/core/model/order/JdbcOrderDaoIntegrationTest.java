@@ -35,6 +35,7 @@ public class JdbcOrderDaoIntegrationTest {
     private Order order;
 
     private Phone phone1;
+
     private Phone phone2;
 
     @Before
@@ -44,24 +45,9 @@ public class JdbcOrderDaoIntegrationTest {
         phone2 = new Phone();
         phone1.setId(EXISTING_PHONE_KEY_1);
         phone2.setId(EXISTING_PHONE_KEY_2);
-        OrderItem orderItem1 = new OrderItem();
-        orderItem1.setPhone(phone1);
-        orderItem1.setQuantity(1);
-        orderItem1.setOrder(order);
-        OrderItem orderItem2 = new OrderItem();
-        orderItem2.setPhone(phone2);
-        orderItem2.setQuantity(1);
-        orderItem2.setOrder(order);
-        order.setOrderItems(Arrays.asList(orderItem1, orderItem2));
-        order.setSubtotal(ORDER_SUBTOTAL);
-        order.setDeliveryPrice(ORDER_DELIVERY_PRICE);
-        order.setTotalPrice(ORDER_SUBTOTAL.add(ORDER_DELIVERY_PRICE));
-        order.setFirstName("First Name");
-        order.setLastName("Last Name");
-        order.setContactPhoneNo("12345");
-        order.setDeliveryAddress("DeliveryAddress");
-        order.setStatus(OrderStatus.NEW);
-        order.setPlacementDate(new Date());
+        OrderItem orderItem1 = new OrderItem(phone1, 1, order);
+        OrderItem orderItem2 = new OrderItem(phone2, 1, order);
+        populateTestOrder(orderItem1, orderItem2);
     }
 
     @Test
@@ -106,5 +92,18 @@ public class JdbcOrderDaoIntegrationTest {
 
     private Integer countItemsForOrder(Long orderId) {
         return jdbcTemplate.queryForObject(SQL_COUNT_ITEMS_FOR_ORDER, new Long[]{orderId}, Integer.class);
+    }
+
+    private void populateTestOrder(OrderItem orderItem1, OrderItem orderItem2) {
+        order.setOrderItems(Arrays.asList(orderItem1, orderItem2));
+        order.setSubtotal(ORDER_SUBTOTAL);
+        order.setDeliveryPrice(ORDER_DELIVERY_PRICE);
+        order.setTotalPrice(ORDER_SUBTOTAL.add(ORDER_DELIVERY_PRICE));
+        order.setFirstName("First Name");
+        order.setLastName("Last Name");
+        order.setContactPhoneNo("12345");
+        order.setDeliveryAddress("DeliveryAddress");
+        order.setStatus(OrderStatus.NEW);
+        order.setPlacementDate(new Date());
     }
 }

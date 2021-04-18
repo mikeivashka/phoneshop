@@ -2,10 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+                           http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:component-scan base-package="com.es.core"/>
     <context:property-placeholder location="classpath:conf/application.properties"/>
@@ -19,6 +19,48 @@
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg type="javax.sql.DataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="cartCalculationService" class="com.es.core.model.cart.CartCalculationServiceImpl"/>
+
+    <bean id="phoneDao" class="com.es.core.model.phone.JdbcPhoneDao">
+        <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <bean id="cartService" class="com.es.core.model.cart.HttpSessionCartService">
+        <constructor-arg name="cartCalculationService" ref="cartCalculationService"/>
+        <constructor-arg name="phoneDao" ref="phoneDao"/>
+        <constructor-arg name="cart" ref="cart"/>
+    </bean>
+
+    <bean id="jdbcOrderDao" class="com.es.core.model.order.JdbcOrderDao">
+        <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
+        <constructor-arg name="phoneDao" ref="phoneDao"/>
+        <constructor-arg name="stockDao" ref="jdbcStockDao"/>
+        <constructor-arg name="orderFieldNames">
+            <util:list>
+                <value>subtotal</value>
+                <value>deliveryPrice</value>
+                <value>totalPrice</value>
+                <value>firstName</value>
+                <value>lastName</value>
+                <value>deliveryAddress</value>
+                <value>contactPhoneNo</value>
+                <value>additionalInfo</value>
+                <value>status</value>
+                <value>placementDate</value>
+            </util:list>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id="orderServiceImpl" class="com.es.core.model.order.OrderServiceImpl">
+        <constructor-arg name="orderDao" ref="jdbcOrderDao"/>
+        <constructor-arg name="stockDao" ref="jdbcStockDao"/>
+    </bean>
+
+    <bean id="jdbcStockDao" class="com.es.core.model.stock.JdbcStockDao">
+        <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <jdbc:initialize-database enabled="${db.insertSchema}">

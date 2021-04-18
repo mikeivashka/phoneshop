@@ -2,32 +2,38 @@ package com.es.core.model.order;
 
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.stock.StockDao;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Component
 public class JdbcOrderDao implements OrderDao {
     private static final String SQL_GET_ORDER_BY_ID = "SELECT * FROM orders WHERE orders.id = ?";
     private static final String SQL_GET_ITEMS_FOR_ORDER = "SELECT * FROM orderItems WHERE orderItems.orderId = ? ";
     private static final String SQL_FIND_ALL_ORDERS = "SELECT * FROM orders ORDER BY placementDate DESC";
     private static final String SQL_UPDATE_ORDER_STATUS = "UPDATE orders SET status = ? WHERE id = ?";
 
-    @Resource
-    private StockDao stockDao;
+    private final StockDao stockDao;
 
-    @Resource
-    private PhoneDao phoneDao;
+    private final PhoneDao phoneDao;
 
-    @Resource
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    private final List<String> orderFieldNames;
+
+    public JdbcOrderDao(StockDao stockDao, PhoneDao phoneDao, JdbcTemplate jdbcTemplate, List<String> orderFieldNames) {
+        this.stockDao = stockDao;
+        this.phoneDao = phoneDao;
+        this.jdbcTemplate = jdbcTemplate;
+        this.orderFieldNames = orderFieldNames;
+    }
 
     @Override
     public void placeOrder(Order order) {
@@ -66,17 +72,7 @@ public class JdbcOrderDao implements OrderDao {
     }
 
     private List<OrderItem> getItemsForOrder(Order order) {
-        return jdbcTemplate.query(SQL_GET_ITEMS_FOR_ORDER,
-                (rs, rowNum) -> {
-                    OrderItem orderItem = new OrderItem();
-                    orderItem.setQuantity(rs.getInt("quantity"));
-                    orderItem.setPhone(phoneDao.get(rs.getLong("phoneId"))
-                            .orElseThrow(IllegalArgumentException::new));
-                    orderItem.setOrder(order);
-                    orderItem.setId(rs.getLong("id"));
-                    return orderItem;
-                },
-                order.getId());
+        return jdbcTemplate.query(SQL_GET_ITEMS_FOR_ORDER, getOrderItemRowMapper(order), order.getId());
     }
 
     private void saveOrderItems(Order order) {
@@ -88,6 +84,18 @@ public class JdbcOrderDao implements OrderDao {
         for (int i = 0; i < identifiers.length; i++) {
             order.getOrderItems().get(i).setId((long) identifiers[i]);
         }
+    }
+
+    private RowMapper<OrderItem> getOrderItemRowMapper(Order order) {
+        return (rs, rowNum) -> {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setQuantity(rs.getInt("quantity"));
+            orderItem.setPhone(phoneDao.get(rs.getLong("phoneId"))
+                    .orElseThrow(IllegalArgumentException::new));
+            orderItem.setOrder(order);
+            orderItem.setId(rs.getLong("id"));
+            return orderItem;
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -104,17 +112,9 @@ public class JdbcOrderDao implements OrderDao {
     }
 
     private Map<String, Object> convertOrderToMap(Order order) {
-        Map<String, Object> orderAsMap = new HashMap<>();
-        orderAsMap.put("subtotal", order.getSubtotal());
-        orderAsMap.put("deliveryPrice", order.getDeliveryPrice());
-        orderAsMap.put("totalPrice", order.getTotalPrice());
-        orderAsMap.put("firstName", order.getFirstName());
-        orderAsMap.put("lastName", order.getLastName());
-        orderAsMap.put("deliveryAddress", order.getDeliveryAddress());
-        orderAsMap.put("contactPhoneNo", order.getContactPhoneNo());
-        orderAsMap.put("additionalInfo", order.getAdditionalInfo());
-        orderAsMap.put("status", order.getStatus());
-        orderAsMap.put("placementDate", order.getPlacementDate());
-        return orderAsMap;
+        BeanWrapperImpl wrapper = new BeanWrapperImpl(order);
+        return orderFieldNames.stream()
+                .filter(name -> wrapper.getPropertyValue(name) != null)
+                .collect(Collectors.toMap(s -> s, wrapper::getPropertyValue));
     }
 }

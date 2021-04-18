@@ -13,10 +13,10 @@ import javax.annotation.Resource;
 @RequestMapping(value = "/orderOverview")
 public class OrderOverviewPageController {
     @Resource
-    OrderService orderService;
+    private OrderService orderService;
 
     @GetMapping("/{orderId}")
-    public String getOverview(@PathVariable Long orderId, Model model){
+    public String getOverview(@PathVariable Long orderId, Model model) {
         model.addAttribute("order", orderService.getOrderById(orderId));
         return "orderOverview";
     }

@@ -27,7 +27,7 @@
                 <td>Price</td>
             </tr>
             </thead>
-            <c:forEach var="item" varStatus="status" items="${order.orderItems}">
+            <c:forEach var="item" varStatus="status" items="${orderForm.orderItems}">
                 <tr>
                     <td class="align-middle">
                         <a href="${pageContext.request.contextPath}/productDetails/${item.phone.id}">
@@ -65,16 +65,16 @@
             <tr>
                 <td colspan="5"/>
                 <td>Subtotal:</td>
-                <td><strong>$ ${order.subtotal}</strong></td>
+                <td><strong>$ ${orderForm.subtotal}</strong></td>
             </tr>
             <tr>
                 <td colspan="5"/>
                 <td>Delivery price:</td>
-                <td><strong>$ ${order.deliveryPrice}</strong></td>
+                <td><strong>$ ${orderForm.deliveryPrice}</strong></td>
             </tr>
             <tr>
                 <td colspan="5">
-                    <spring:hasBindErrors name="order">
+                    <spring:hasBindErrors name="orderForm">
                         <c:if test="${errors.hasFieldErrors('orderItems[*')}">
                             <p class="text-danger">Some of products were removed from your cart, because they are out of
                                 stock</p>
@@ -82,19 +82,19 @@
                     </spring:hasBindErrors>
                 </td>
                 <td>TOTAL:</td>
-                <td><strong>$ ${order.totalPrice}</strong></td>
+                <td><strong>$ ${orderForm.totalPrice}</strong></td>
             </tr>
         </table>
     </div>
     <div class="col-md-6  justify-content-between">
-        <form:form action="${pageContext.servletContext.contextPath}/order" method="post" modelAttribute="order">
+        <form:form action="${pageContext.servletContext.contextPath}/order" method="post" modelAttribute="orderForm">
             <div class="form-group">
                 <div class="input-group col-4">
                     <form:label path="firstName" for="firstName">
                         First name*
                     </form:label>
                     <form:input size="20" path="firstName" id="firstName" placeholder="Ivan"
-                                value="${order.firstName}"/>
+                                value="${orderForm.firstName}"/>
                     <div class="text-danger">
                         <form:errors path="firstName"/>
                     </div>
@@ -103,7 +103,8 @@
             <div class="form-group">
                 <div class="input-group col-6">
                     <form:label path="lastName" for="lastName">Last name*</form:label>
-                    <form:input size="20" path="lastName" id="lastName" placeholder="Ivanov" value="${order.lastName}"/>
+                    <form:input size="20" path="lastName" id="lastName" placeholder="Ivanov"
+                                value="${orderForm.lastName}"/>
                     <div class="text-danger">
                         <form:errors path="lastName"/>
                     </div>
@@ -115,7 +116,7 @@
                         Delivery address*
                     </form:label>
                     <form:input path="deliveryAddress" id="address" placeholder="Minsk, Melezha st., 5-2"
-                                value="${order.deliveryAddress}"/>
+                                value="${orderForm.deliveryAddress}"/>
                     <div class="text-danger">
                         <form:errors path="deliveryAddress"/>
                     </div>
@@ -127,7 +128,7 @@
                         Phone*
                     </form:label>
                     <form:input size="20" path="contactPhoneNo" id="phone" placeholder="+"
-                                value="${order.contactPhoneNo}"/>
+                                value="${orderForm.contactPhoneNo}"/>
                     <div class=" text-danger">
                         <form:errors path="contactPhoneNo"/>
                     </div>

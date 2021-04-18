@@ -1,33 +1,36 @@
 package com.es.core.model.cart;
 
-import com.es.core.model.phone.CartItem;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
 public class HttpSessionCartService implements CartService {
-    @Resource
-    private CartCalculationService cartCalculationService;
+    private final CartCalculationService cartCalculationService;
 
-    @Resource
-    private Cart cart;
+    private final Cart cart;
 
-    @Resource
-    private PhoneDao phoneDao;
+    private final PhoneDao phoneDao;
+
+    public HttpSessionCartService(CartCalculationService cartCalculationService, Cart cart, PhoneDao phoneDao) {
+        this.cartCalculationService = cartCalculationService;
+        this.cart = cart;
+        this.phoneDao = phoneDao;
+    }
 
     @Override
     public Map<Phone, Integer> getCart() {
         return cart.getCartItems().stream()
-                .collect(Collectors.toMap(CartItem::getPhone, CartItem::getQuantity, (x, y) -> y, LinkedHashMap<Phone, Integer>::new));
+                .collect(Collectors.toMap(CartItem::getPhone, CartItem::getQuantity, Integer::sum));
+    }
+
+    @Override
+    public Set<CartItem> getCartItems() {
+        return cart.getCartItems();
     }
 
     @Override
@@ -55,7 +58,7 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void remove(Long phoneId) {
-        cart.getCartItems().removeIf(cartItem -> cartItem.getPhone().getId().equals(phoneId));
+        cart.getCartItems().removeIf(item -> item.getPhone().getId().equals(phoneId));
     }
 
     @Override
@@ -65,8 +68,11 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public Integer getTotalItemsCount() {
-        return cart.getCartItems().stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+        return cartCalculationService.countTotalItems(cart.getCartItems());
+    }
+
+    @Override
+    public void clearCart() {
+        cart.getCartItems().clear();
     }
 }

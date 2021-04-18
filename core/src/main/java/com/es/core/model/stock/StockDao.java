@@ -1,6 +1,6 @@
 package com.es.core.model.stock;
 
-import com.es.core.model.phone.CartItem;
+import com.es.core.model.cart.CartItem;
 import com.es.core.model.phone.Phone;
 
 import java.util.List;

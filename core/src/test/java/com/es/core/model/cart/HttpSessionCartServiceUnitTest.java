@@ -1,6 +1,5 @@
 package com.es.core.model.cart;
 
-import com.es.core.model.phone.CartItem;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import org.junit.Before;
@@ -16,6 +15,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,6 +67,7 @@ public class HttpSessionCartServiceUnitTest {
         when(phone2.getId()).thenReturn(PHONE_2_ID);
         when(phone3.getId()).thenReturn(PHONE_3_ID);
         when(cartCalculationService.calculateCartTotal(any())).thenCallRealMethod();
+        when(cartCalculationService.countTotalItems(any())).thenCallRealMethod();
         cartItems = new HashSet<>(Arrays.asList(new CartItem(phone1, PHONE_1_QUANTITY),
                 new CartItem(phone2, PHONE_2_QUANTITY),
                 new CartItem(phone3, PHONE_3_QUANTITY)
