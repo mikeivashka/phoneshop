@@ -8,6 +8,8 @@ public interface OrderService {
 
     void placeOrder(Order order);
 
+    Order createOrderFromCart();
+
     void updateStatus(Order order, OrderStatus newStatus);
 
     List<Order> findAll();

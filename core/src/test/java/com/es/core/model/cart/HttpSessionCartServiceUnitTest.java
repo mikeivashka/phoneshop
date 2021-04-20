@@ -36,9 +36,6 @@ public class HttpSessionCartServiceUnitTest {
     private HttpSessionCartService cartService;
 
     @Mock
-    private CartCalculationServiceImpl cartCalculationService;
-
-    @Mock
     private Phone phone1;
 
     @Mock
@@ -66,8 +63,6 @@ public class HttpSessionCartServiceUnitTest {
         when(phone1.getId()).thenReturn(PHONE_1_ID);
         when(phone2.getId()).thenReturn(PHONE_2_ID);
         when(phone3.getId()).thenReturn(PHONE_3_ID);
-        when(cartCalculationService.calculateCartTotal(any())).thenCallRealMethod();
-        when(cartCalculationService.countTotalItems(any())).thenCallRealMethod();
         cartItems = new HashSet<>(Arrays.asList(new CartItem(phone1, PHONE_1_QUANTITY),
                 new CartItem(phone2, PHONE_2_QUANTITY),
                 new CartItem(phone3, PHONE_3_QUANTITY)

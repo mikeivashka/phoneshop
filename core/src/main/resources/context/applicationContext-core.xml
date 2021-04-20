@@ -21,14 +21,11 @@
         <constructor-arg type="javax.sql.DataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="cartCalculationService" class="com.es.core.model.cart.CartCalculationServiceImpl"/>
-
     <bean id="phoneDao" class="com.es.core.model.phone.JdbcPhoneDao">
         <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="cartService" class="com.es.core.model.cart.HttpSessionCartService">
-        <constructor-arg name="cartCalculationService" ref="cartCalculationService"/>
         <constructor-arg name="phoneDao" ref="phoneDao"/>
         <constructor-arg name="cart" ref="cart"/>
     </bean>
@@ -57,6 +54,7 @@
     <bean id="orderServiceImpl" class="com.es.core.model.order.OrderServiceImpl">
         <constructor-arg name="orderDao" ref="jdbcOrderDao"/>
         <constructor-arg name="stockDao" ref="jdbcStockDao"/>
+        <constructor-arg name="cartService" ref="cartService"/>
     </bean>
 
     <bean id="jdbcStockDao" class="com.es.core.model.stock.JdbcStockDao">

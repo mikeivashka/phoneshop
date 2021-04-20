@@ -1,12 +1,11 @@
 package com.es.phoneshop.web.controller.pages;
 
-import com.es.core.model.cart.CartCalculationService;
 import com.es.core.model.cart.CartService;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderService;
-import com.es.core.model.cart.CartItem;
 import com.es.phoneshop.web.controller.dto.CreateOrderForm;
+import com.es.phoneshop.web.controller.dto.OrderItemEntryCreateForm;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,14 +27,11 @@ public class OrderPageController {
     private OrderService orderService;
 
     @Resource
-    private CartCalculationService cartCalculationService;
-
-    @Resource
     private CartService cartService;
 
     @ModelAttribute("orderForm")
-    public CreateOrderForm populate() {
-        return buildOrderForm();
+    public CreateOrderForm populateOrderForm() {
+        return buildOrderForm(orderService.createOrderFromCart());
     }
 
     @GetMapping
@@ -44,14 +39,18 @@ public class OrderPageController {
         if (cartService.getCart().isEmpty()) {
             return "redirect:cart";
         }
-        model.addAttribute("orderForm", buildOrderForm());
+        model.addAttribute("order", orderService.createOrderFromCart());
         return "orderPage";
     }
 
     @PostMapping
-    public String placeOrder(@ModelAttribute("orderForm") @Valid CreateOrderForm orderForm, BindingResult bindingResult, Model model, SessionStatus sessionStatus) {
+    public String placeOrder(@ModelAttribute("orderForm") @Valid CreateOrderForm orderForm,
+                             BindingResult bindingResult,
+                             Model model,
+                             SessionStatus sessionStatus) {
+        Order order = orderService.createOrderFromCart();
         if (!bindingResult.hasErrors()) {
-            Order order = parseOrderForm(orderForm);
+            addFormDataToOrder(order, orderForm);
             orderService.placeOrder(order);
             sessionStatus.setComplete();
             cartService.clearCart();
@@ -59,41 +58,40 @@ public class OrderPageController {
         } else {
             List<FieldError> outOfStockErrors = bindingResult.getFieldErrors("orderItems[*");
             if (!outOfStockErrors.isEmpty()) {
-                handleOutOfStockErrors(outOfStockErrors, orderForm);
+                handleOutOfStockErrors(outOfStockErrors);
+                order = orderService.createOrderFromCart();
             }
+            copyOrderItemsToForm(order, orderForm);
+            model.addAttribute("orderForm", orderForm);
+            model.addAttribute("order", order);
             return "orderPage";
         }
     }
 
-    private CreateOrderForm buildOrderForm() {
-        CreateOrderForm orderForm = new CreateOrderForm();
-        orderForm.setOrderItems(new ArrayList<>(cartService.getCartItems()));
-        recalculate(orderForm);
-        return orderForm;
+    private CreateOrderForm buildOrderForm(Order order) {
+        CreateOrderForm form = new CreateOrderForm();
+        BeanUtils.copyProperties(order, form, "orderItems");
+        copyOrderItemsToForm(order, form);
+        return form;
     }
 
-    private void recalculate(CreateOrderForm orderForm) {
-        orderForm.setSubtotal(cartCalculationService.calculateCartTotal(orderForm.getOrderItems()));
-        orderForm.setDeliveryPrice(orderService.getDeliveryPrice());
-        orderForm.setTotalPrice(orderForm.getSubtotal().add(orderForm.getDeliveryPrice()));
+    private void copyOrderItemsToForm(Order order, CreateOrderForm form) {
+        form.setOrderItems(order.getOrderItems().stream()
+                .map(item -> new OrderItemEntryCreateForm(item.getPhone(), item.getQuantity()))
+                .collect(Collectors.toList())
+        );
     }
 
-    private void handleOutOfStockErrors(List<FieldError> outOfStockErrors, CreateOrderForm orderForm) {
+    private void handleOutOfStockErrors(List<FieldError> outOfStockErrors) {
         outOfStockErrors.stream()
-                .map(e -> (CartItem) e.getRejectedValue())
-                .forEach(rejectedItem -> {
-                    cartService.remove(rejectedItem.getPhone().getId());
-                    orderForm.getOrderItems().remove(rejectedItem);
-                });
-        recalculate(orderForm);
+                .map(e -> (OrderItemEntryCreateForm) e.getRejectedValue())
+                .forEach(rejectedItem -> cartService.remove(rejectedItem.getPhone().getId()));
     }
 
-    private Order parseOrderForm(CreateOrderForm orderForm) {
-        Order order = new Order();
+    private void addFormDataToOrder(Order order, CreateOrderForm orderForm) {
         BeanUtils.copyProperties(orderForm, order, "orderItems");
         order.setOrderItems(orderForm.getOrderItems().stream()
-                .map(cartItem -> new OrderItem(cartItem, order))
+                .map(formOrderItem -> new OrderItem(formOrderItem.getPhone(), formOrderItem.getQuantity(), order))
                 .collect(Collectors.toList()));
-        return order;
     }
 }

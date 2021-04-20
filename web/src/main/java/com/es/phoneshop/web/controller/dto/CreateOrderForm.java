@@ -1,19 +1,13 @@
 package com.es.phoneshop.web.controller.dto;
 
-import com.es.core.model.cart.CartItem;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 import java.util.List;
 
 public class CreateOrderForm {
     @Valid
-    private List<@Valid CartItem> orderItems;
-    private BigDecimal subtotal;
-    private BigDecimal deliveryPrice;
-    private BigDecimal totalPrice;
+    private List<@Valid OrderItemEntryCreateForm> orderItems;
     @Size(min = 1, message = "First name is required")
     private String firstName;
     @Size(min = 1, message = "Last name is required")
@@ -25,36 +19,12 @@ public class CreateOrderForm {
     @Size(max = 4096, message = "Limit is 4096 symbols")
     private String additionalInfo;
 
-    public List<CartItem> getOrderItems() {
+    public List<OrderItemEntryCreateForm> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<CartItem> orderItems) {
+    public void setOrderItems(List<OrderItemEntryCreateForm> orderItems) {
         this.orderItems = orderItems;
-    }
-
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public BigDecimal getDeliveryPrice() {
-        return deliveryPrice;
-    }
-
-    public void setDeliveryPrice(BigDecimal deliveryPrice) {
-        this.deliveryPrice = deliveryPrice;
-    }
-
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public String getFirstName() {

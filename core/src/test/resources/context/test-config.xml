@@ -18,20 +18,13 @@
     </bean>
 
 
-    <bean id="cartCalculationService" class="com.es.core.model.cart.CartCalculationServiceImpl"/>
-
     <bean id="phoneDao" class="com.es.core.model.phone.JdbcPhoneDao">
         <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="cartService" class="com.es.core.model.cart.HttpSessionCartService">
-        <constructor-arg name="cartCalculationService" ref="cartCalculationService"/>
         <constructor-arg name="phoneDao" ref="phoneDao"/>
         <constructor-arg name="cart" ref="cart"/>
-    </bean>
-
-    <bean id="enoughStockConstraintValidator" class="com.es.core.model.order.EnoughStockConstraintValidator">
-        <constructor-arg name="stockDao" ref="jdbcStockDao"/>
     </bean>
 
     <bean id="jdbcOrderDao" class="com.es.core.model.order.JdbcOrderDao">

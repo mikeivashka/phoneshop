@@ -65,12 +65,12 @@
             <tr>
                 <td colspan="5"/>
                 <td>Subtotal:</td>
-                <td><strong>$ ${orderForm.subtotal}</strong></td>
+                <td><strong>$ ${order.subtotal}</strong></td>
             </tr>
             <tr>
                 <td colspan="5"/>
                 <td>Delivery price:</td>
-                <td><strong>$ ${orderForm.deliveryPrice}</strong></td>
+                <td><strong>$ ${order.deliveryPrice}</strong></td>
             </tr>
             <tr>
                 <td colspan="5">
@@ -82,7 +82,7 @@
                     </spring:hasBindErrors>
                 </td>
                 <td>TOTAL:</td>
-                <td><strong>$ ${orderForm.totalPrice}</strong></td>
+                <td><strong>$ ${order.totalPrice}</strong></td>
             </tr>
         </table>
     </div>

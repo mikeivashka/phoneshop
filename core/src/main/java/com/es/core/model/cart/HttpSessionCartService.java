@@ -10,14 +10,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HttpSessionCartService implements CartService {
-    private final CartCalculationService cartCalculationService;
 
     private final Cart cart;
 
     private final PhoneDao phoneDao;
 
-    public HttpSessionCartService(CartCalculationService cartCalculationService, Cart cart, PhoneDao phoneDao) {
-        this.cartCalculationService = cartCalculationService;
+    public HttpSessionCartService(Cart cart, PhoneDao phoneDao) {
         this.cart = cart;
         this.phoneDao = phoneDao;
     }
@@ -63,12 +61,16 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public BigDecimal getTotalPrice() {
-        return cartCalculationService.calculateCartTotal(cart.getCartItems());
+        return cart.getCartItems().stream()
+                .map(cartItem -> cartItem.getPhone().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
     public Integer getTotalItemsCount() {
-        return cartCalculationService.countTotalItems(cart.getCartItems());
+        return cart.getCartItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
     }
 
     @Override
