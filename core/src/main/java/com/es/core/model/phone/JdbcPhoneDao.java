@@ -16,6 +16,7 @@ public class JdbcPhoneDao implements PhoneDao {
     private static final String SQL_ALL_PRODUCTS = "SELECT * FROM phones ORDER BY %s %s OFFSET %d LIMIT %d";
     private static final String SQL_FIND_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT * FROM phones JOIN stocks ON phones.id = stocks.phoneId WHERE price IS NOT NULL AND stock > 0 AND LOWER(model) LIKE LOWER('%%%s%%') ORDER BY %s %s OFFSET %d LIMIT %d";
     private static final String SQL_COUNT_PRODUCTS_NONNULL_PRICE_POSITIVE_STOCK = "SELECT COUNT(*) FROM phones JOIN stocks ON phones.id = stocks.phoneId WHERE price IS NOT NULL AND stock > 0 AND LOWER(model) LIKE LOWER('%%%s%%')";
+    private static final String SQL_GET_PHONE_BY_KEY_QUERY = "SELECT * FROM phones WHERE model = '%s'";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,6 +30,17 @@ public class JdbcPhoneDao implements PhoneDao {
         if (!matches.isEmpty()) {
             matches.get(0).setColors(queryColors(key));
             return Optional.of(matches.get(0));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Phone> get(final String model) {
+        List<Phone> matches = jdbcTemplate.query(String.format(SQL_GET_PHONE_BY_KEY_QUERY, model), new BeanPropertyRowMapper<>(Phone.class));
+        if (!matches.isEmpty()) {
+            Phone phone = matches.get(0);
+            phone.setColors(queryColors(phone.getId()));
+            return Optional.of(phone);
         }
         return Optional.empty();
     }

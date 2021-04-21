@@ -12,6 +12,9 @@
                 Found ${totalResults} phones.
             </p>
         </div>
+        <div class="col-md-1 pt-1">
+            <a type="button" class="btn btn-primary" href="${pageContext.request.contextPath}/quickOrder">Quick order</a>
+        </div>
         <!-- Search form -->
         <div>
             <form>
