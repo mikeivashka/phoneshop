@@ -51,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
     public void placeOrder(Order order) {
         order.setPlacementDate(new Date());
         order.setStatus(OrderStatus.NEW);
+        cartService.clearCart();
         orderDao.placeOrder(order);
     }
 

@@ -2,12 +2,12 @@ package com.es.phoneshop.web.controller.validation;
 
 import com.es.core.model.stock.Stock;
 import com.es.core.model.stock.StockDao;
-import com.es.phoneshop.web.controller.dto.OrderItemEntryCreateForm;
+import com.es.phoneshop.web.controller.dto.OrderFormItem;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class EnoughStockConstraintValidator implements ConstraintValidator<EnoughStock, OrderItemEntryCreateForm> {
+public class EnoughStockConstraintValidator implements ConstraintValidator<EnoughStock, OrderFormItem> {
 
     private final StockDao stockDao;
 
@@ -16,7 +16,7 @@ public class EnoughStockConstraintValidator implements ConstraintValidator<Enoug
     }
 
     @Override
-    public boolean isValid(OrderItemEntryCreateForm orderItemEntryCreateForm, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(OrderFormItem orderItemEntryCreateForm, ConstraintValidatorContext constraintValidatorContext) {
         int requiredQuantity = orderItemEntryCreateForm.getQuantity();
         Stock available = stockDao.getStockForPhone(orderItemEntryCreateForm.getPhone());
         return requiredQuantity <= available.getStock() - available.getReserved();

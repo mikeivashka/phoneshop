@@ -4,11 +4,11 @@ import com.es.core.model.phone.Phone;
 import com.es.phoneshop.web.controller.validation.EnoughStock;
 
 @EnoughStock
-public class OrderItemEntryCreateForm {
+public class OrderFormItem {
     private Phone phone;
     private Integer quantity;
 
-    public OrderItemEntryCreateForm(Phone phone, Integer quantity) {
+    public OrderFormItem(Phone phone, Integer quantity) {
         this.phone = phone;
         this.quantity = quantity;
     }

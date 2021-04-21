@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CreateOrderForm {
     @Valid
-    private List<@Valid OrderItemEntryCreateForm> orderItems;
+    private List<@Valid OrderFormItem> orderItems;
     @Size(min = 1, message = "First name is required")
     private String firstName;
     @Size(min = 1, message = "Last name is required")
@@ -19,11 +19,11 @@ public class CreateOrderForm {
     @Size(max = 4096, message = "Limit is 4096 symbols")
     private String additionalInfo;
 
-    public List<OrderItemEntryCreateForm> getOrderItems() {
+    public List<OrderFormItem> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItemEntryCreateForm> orderItems) {
+    public void setOrderItems(List<OrderFormItem> orderItems) {
         this.orderItems = orderItems;
     }
 

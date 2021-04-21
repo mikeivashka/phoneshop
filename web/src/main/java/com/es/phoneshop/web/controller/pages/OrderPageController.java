@@ -5,7 +5,7 @@ import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderService;
 import com.es.phoneshop.web.controller.dto.CreateOrderForm;
-import com.es.phoneshop.web.controller.dto.OrderItemEntryCreateForm;
+import com.es.phoneshop.web.controller.dto.OrderFormItem;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,7 +53,6 @@ public class OrderPageController {
             addFormDataToOrder(order, orderForm);
             orderService.placeOrder(order);
             sessionStatus.setComplete();
-            cartService.clearCart();
             return "redirect:/orderOverview/" + order.getId();
         } else {
             List<FieldError> outOfStockErrors = bindingResult.getFieldErrors("orderItems[*");
@@ -62,7 +61,6 @@ public class OrderPageController {
                 order = orderService.createOrderFromCart();
             }
             copyOrderItemsToForm(order, orderForm);
-            model.addAttribute("orderForm", orderForm);
             model.addAttribute("order", order);
             return "orderPage";
         }
@@ -77,14 +75,14 @@ public class OrderPageController {
 
     private void copyOrderItemsToForm(Order order, CreateOrderForm form) {
         form.setOrderItems(order.getOrderItems().stream()
-                .map(item -> new OrderItemEntryCreateForm(item.getPhone(), item.getQuantity()))
+                .map(item -> new OrderFormItem(item.getPhone(), item.getQuantity()))
                 .collect(Collectors.toList())
         );
     }
 
     private void handleOutOfStockErrors(List<FieldError> outOfStockErrors) {
         outOfStockErrors.stream()
-                .map(e -> (OrderItemEntryCreateForm) e.getRejectedValue())
+                .map(e -> (OrderFormItem) e.getRejectedValue())
                 .forEach(rejectedItem -> cartService.remove(rejectedItem.getPhone().getId()));
     }
 
