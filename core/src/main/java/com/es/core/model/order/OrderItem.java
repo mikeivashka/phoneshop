@@ -1,19 +1,24 @@
 package com.es.core.model.order;
 
+import com.es.core.model.cart.CartItem;
 import com.es.core.model.phone.Phone;
 
-public class OrderItem {
+public class OrderItem extends CartItem {
     private Long id;
-    private Phone phone;
     private Order order;
-    private Long quantity;
 
-    public Phone getPhone() {
-        return phone;
+    public OrderItem(Phone phone, Integer quantity, Order order) {
+        super(phone, quantity);
+        this.order = order;
     }
 
-    public void setPhone(final Phone phone) {
-        this.phone = phone;
+    public OrderItem(CartItem cartItem, Order order) {
+        super(cartItem.getPhone(), cartItem.getQuantity());
+        this.order = order;
+    }
+
+    public OrderItem() {
+        super();
     }
 
     public Order getOrder() {
@@ -24,11 +29,11 @@ public class OrderItem {
         this.order = order;
     }
 
-    public Long getQuantity() {
-        return quantity;
+    public Long getId() {
+        return id;
     }
 
-    public void setQuantity(final Long quantity) {
-        this.quantity = quantity;
+    public void setId(Long id) {
+        this.id = id;
     }
 }

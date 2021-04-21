@@ -275,40 +275,6 @@ public class Phone {
     }
 
     @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Phone{");
-        sb.append("id=").append(id);
-        sb.append(", brand='").append(brand).append('\'');
-        sb.append(", model='").append(model).append('\'');
-        sb.append(", price=").append(price);
-        sb.append(", displaySizeInches=").append(displaySizeInches);
-        sb.append(", weightGr=").append(weightGr);
-        sb.append(", lengthMm=").append(lengthMm);
-        sb.append(", widthMm=").append(widthMm);
-        sb.append(", heightMm=").append(heightMm);
-        sb.append(", announced=").append(announced);
-        sb.append(", deviceType='").append(deviceType).append('\'');
-        sb.append(", os='").append(os).append('\'');
-        sb.append(", colors=").append(colors);
-        sb.append(", displayResolution='").append(displayResolution).append('\'');
-        sb.append(", pixelDensity=").append(pixelDensity);
-        sb.append(", displayTechnology='").append(displayTechnology).append('\'');
-        sb.append(", backCameraMegapixels=").append(backCameraMegapixels);
-        sb.append(", frontCameraMegapixels=").append(frontCameraMegapixels);
-        sb.append(", ramGb=").append(ramGb);
-        sb.append(", internalStorageGb=").append(internalStorageGb);
-        sb.append(", batteryCapacityMah=").append(batteryCapacityMah);
-        sb.append(", talkTimeHours=").append(talkTimeHours);
-        sb.append(", standByTimeHours=").append(standByTimeHours);
-        sb.append(", bluetooth='").append(bluetooth).append('\'');
-        sb.append(", positioning='").append(positioning).append('\'');
-        sb.append(", imageUrl='").append(imageUrl).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

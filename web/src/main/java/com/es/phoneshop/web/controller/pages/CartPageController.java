@@ -1,6 +1,6 @@
 package com.es.phoneshop.web.controller.pages;
 
-import com.es.core.cart.CartService;
+import com.es.core.model.cart.CartService;
 import com.es.core.model.phone.Phone;
 import com.es.phoneshop.web.controller.dto.CartEntryUpdateForm;
 import com.es.phoneshop.web.controller.dto.CartUpdateForm;
@@ -22,7 +22,7 @@ public class CartPageController {
 
     @GetMapping
     public String getCart(Model model) {
-        Map<Phone, Long> cart = cartService.getCart();
+        Map<Phone, Integer> cart = cartService.getCart();
         model.addAttribute("cart", cart);
         model.addAttribute("cartUpdateForm", extractUpdateFormFromCart(cart));
         return "cartPage";
@@ -40,14 +40,14 @@ public class CartPageController {
     }
 
     @RequestMapping(value = "/minicart",
-            method = {RequestMethod.GET, RequestMethod.PUT})
+            method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST})
     public String getMinicart(Model model) {
         model.addAttribute("cartTotalPrice", cartService.getTotalPrice());
         model.addAttribute("cartTotalItemsCount", cartService.getTotalItemsCount());
         return "miniCart";
     }
 
-    private CartUpdateForm extractUpdateFormFromCart(Map<Phone, Long> cart) {
+    private CartUpdateForm extractUpdateFormFromCart(Map<Phone, Integer> cart) {
         CartUpdateForm cartUpdateForm = new CartUpdateForm();
         cartUpdateForm.setCartEntries(cart.entrySet().stream().map(entry -> {
                     CartEntryUpdateForm formEntry = new CartEntryUpdateForm();
@@ -59,9 +59,9 @@ public class CartPageController {
         return cartUpdateForm;
     }
 
-    private Map<Long, Long> parseUpdateForm(CartUpdateForm form) {
+    private Map<Long, Integer> parseUpdateForm(CartUpdateForm form) {
         return form.getCartEntries()
                 .stream()
-                .collect(Collectors.toMap(CartEntryUpdateForm::getProductId, entry -> Long.valueOf(entry.getQuantity())));
+                .collect(Collectors.toMap(CartEntryUpdateForm::getProductId, entry -> Integer.valueOf(entry.getQuantity())));
     }
 }

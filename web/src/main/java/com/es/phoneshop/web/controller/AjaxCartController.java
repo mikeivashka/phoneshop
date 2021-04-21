@@ -1,6 +1,6 @@
 package com.es.phoneshop.web.controller;
 
-import com.es.core.cart.CartService;
+import com.es.core.model.cart.CartService;
 import com.es.phoneshop.web.controller.dto.AddToCartRequest;
 import com.es.phoneshop.web.controller.dto.AddToCartResponse;
 import com.es.phoneshop.web.controller.dto.DeleteFromCartRequest;
@@ -26,7 +26,7 @@ public class AjaxCartController {
         AddToCartResponse responseModel = new AddToCartResponse();
         responseModel.setSuccess(!bindingResult.hasErrors());
         if (!bindingResult.hasErrors()) {
-            cartService.addPhone(requestModel.getProductId(), Long.valueOf(requestModel.getQuantity()));
+            cartService.addPhone(requestModel.getProductId(), Integer.valueOf(requestModel.getQuantity()));
             responseModel.setMessage(ADD_TO_CART_SUCCESS_MESSAGE);
         } else {
             responseModel.setMessage(bindingResult.getFieldErrors("quantity")

@@ -1,28 +1,31 @@
 package com.es.core.model.order;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
-public class Order
-{
+
+public class Order {
     private Long id;
     private List<OrderItem> orderItems;
-    /**
-     *  A sum of order item prices;
-     */
     private BigDecimal subtotal;
     private BigDecimal deliveryPrice;
-    /**
-     * <code>subtotal</code> + <code>deliveryPrice</code>
-     */
     private BigDecimal totalPrice;
-
     private String firstName;
     private String lastName;
     private String deliveryAddress;
     private String contactPhoneNo;
-
     private OrderStatus status;
+    private String additionalInfo;
+    private Date placementDate;
+
+    public Date getPlacementDate() {
+        return placementDate;
+    }
+
+    public void setPlacementDate(Date placementDate) {
+        this.placementDate = placementDate;
+    }
 
     public Long getId() {
         return id;
@@ -102,5 +105,13 @@ public class Order
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
     }
 }
